@@ -1,0 +1,954 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>L200 Viewing Checklist</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Inter:wght@400;500;600&display=swap');
+
+  :root {
+    --black: #0f0f0f;
+    --dark: #1a1a1a;
+    --panel: #222222;
+    --border: #2e2e2e;
+    --white: #f5f5f5;
+    --muted: #888;
+    --green: #4caf6e;
+    --green-dim: #1e3328;
+    --amber: #f0a500;
+    --amber-dim: #332500;
+    --red: #e05252;
+    --red-dim: #331818;
+    --accent: #d0a020;
+    --accent-dim: #2a2000;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--black);
+    color: var(--white);
+    font-family: 'Inter', sans-serif;
+    font-size: 15px;
+    line-height: 1.5;
+    max-width: 480px;
+    margin: 0 auto;
+    padding-bottom: 40px;
+  }
+
+  /* HEADER */
+  header {
+    background: var(--dark);
+    border-bottom: 3px solid var(--accent);
+    padding: 20px 16px 16px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .header-eyebrow {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 4px;
+  }
+
+  header h1 {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 28px;
+    font-weight: 800;
+    letter-spacing: 1px;
+    line-height: 1.1;
+    color: var(--white);
+  }
+
+  .progress-bar-wrap {
+    margin-top: 12px;
+    background: var(--border);
+    border-radius: 2px;
+    height: 4px;
+    overflow: hidden;
+  }
+
+  .progress-bar {
+    height: 4px;
+    background: var(--accent);
+    border-radius: 2px;
+    width: 0%;
+    transition: width 0.4s ease;
+  }
+
+  .progress-label {
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 6px;
+    display: flex;
+    justify-content: space-between;
+  }
+
+  /* SECTIONS */
+  .section {
+    margin: 0 12px;
+    margin-top: 20px;
+  }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .section-icon {
+    font-size: 18px;
+    width: 32px;
+    text-align: center;
+    flex-shrink: 0;
+  }
+
+  .section-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+
+  .section-count {
+    margin-left: auto;
+    font-size: 11px;
+    color: var(--muted);
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+
+  /* CHECKLIST ITEMS */
+  .item {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    margin-bottom: 8px;
+    overflow: hidden;
+    transition: border-color 0.2s;
+  }
+
+  .item.checked {
+    border-color: var(--green);
+    background: var(--green-dim);
+  }
+
+  .item.flagged {
+    border-color: var(--red);
+    background: var(--red-dim);
+  }
+
+  .item-main {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 12px 14px;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+  }
+
+  .checkbox {
+    width: 22px;
+    height: 22px;
+    border-radius: 4px;
+    border: 2px solid var(--border);
+    flex-shrink: 0;
+    margin-top: 1px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    font-size: 13px;
+  }
+
+  .item.checked .checkbox {
+    background: var(--green);
+    border-color: var(--green);
+    color: white;
+  }
+
+  .item.flagged .checkbox {
+    background: var(--red);
+    border-color: var(--red);
+    color: white;
+  }
+
+  .item-text {
+    flex: 1;
+  }
+
+  .item-label {
+    font-weight: 600;
+    font-size: 14px;
+    color: var(--white);
+    line-height: 1.3;
+  }
+
+  .item.checked .item-label {
+    color: var(--green);
+  }
+
+  .item.flagged .item-label {
+    color: var(--red);
+  }
+
+  .item-note {
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 3px;
+    line-height: 1.4;
+  }
+
+  .item.checked .item-note,
+  .item.flagged .item-note {
+    color: var(--muted);
+  }
+
+  /* FLAG BUTTON */
+  .flag-btn {
+    padding: 0 14px;
+    padding-top: 0;
+    padding-bottom: 10px;
+    display: none;
+  }
+
+  .item.checked .flag-btn {
+    display: block;
+  }
+
+  .flag-toggle {
+    font-size: 11px;
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    border-radius: 4px;
+    padding: 4px 10px;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .item.flagged .flag-toggle {
+    border-color: var(--red);
+    color: var(--red);
+  }
+
+  /* ALERT BOXES */
+  .alert {
+    margin: 0 12px;
+    margin-top: 16px;
+    border-radius: 6px;
+    padding: 12px 14px;
+    font-size: 13px;
+    line-height: 1.5;
+    border-left: 3px solid;
+  }
+
+  .alert.amber {
+    background: var(--amber-dim);
+    border-color: var(--amber);
+    color: #e0c070;
+  }
+
+  .alert.red {
+    background: var(--red-dim);
+    border-color: var(--red);
+    color: #e08080;
+  }
+
+  .alert strong {
+    display: block;
+    margin-bottom: 3px;
+    font-size: 12px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  /* COST SUMMARY */
+  .cost-box {
+    margin: 0 12px;
+    margin-top: 20px;
+    background: var(--accent-dim);
+    border: 1px solid var(--accent);
+    border-radius: 6px;
+    padding: 14px;
+  }
+
+  .cost-box h3 {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 14px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 12px;
+  }
+
+  .cost-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 13px;
+    padding: 5px 0;
+    border-bottom: 1px solid var(--border);
+    color: var(--muted);
+  }
+
+  .cost-row:last-child {
+    border: none;
+    color: var(--white);
+    font-weight: 600;
+    font-size: 14px;
+    margin-top: 4px;
+    padding-top: 8px;
+  }
+
+  .cost-row span:last-child {
+    color: var(--white);
+  }
+
+  /* RESET */
+  .reset-wrap {
+    margin: 24px 12px 0;
+    text-align: center;
+  }
+
+  .reset-btn {
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    font-size: 12px;
+    padding: 8px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-family: 'Inter', sans-serif;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .reset-btn:active {
+    opacity: 0.6;
+  }
+
+  /* SUMMARY BADGE */
+  .summary {
+    margin: 20px 12px 0;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 14px;
+    display: none;
+  }
+
+  .summary.visible {
+    display: block;
+  }
+
+  .summary h3 {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 14px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--white);
+    margin-bottom: 10px;
+  }
+
+  .summary-stats {
+    display: flex;
+    gap: 12px;
+  }
+
+  .stat {
+    flex: 1;
+    background: var(--dark);
+    border-radius: 4px;
+    padding: 10px;
+    text-align: center;
+  }
+
+  .stat-num {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 28px;
+    font-weight: 800;
+    line-height: 1;
+  }
+
+  .stat-num.green { color: var(--green); }
+  .stat-num.red { color: var(--red); }
+  .stat-num.amber { color: var(--amber); }
+
+  .stat-label {
+    font-size: 10px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-top: 4px;
+  }
+
+  .verdict {
+    margin-top: 12px;
+    font-size: 13px;
+    padding: 10px 12px;
+    border-radius: 4px;
+    line-height: 1.5;
+  }
+
+  .verdict.go { background: var(--green-dim); color: #80d4a0; border: 1px solid var(--green); }
+  .verdict.caution { background: var(--amber-dim); color: #e0c070; border: 1px solid var(--amber); }
+  .verdict.stop { background: var(--red-dim); color: #e08080; border: 1px solid var(--red); }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-eyebrow">Mitsubishi L200 Barbarian · 23 Plate</div>
+  <h1>VIEWING CHECKLIST</h1>
+  <div class="progress-bar-wrap">
+    <div class="progress-bar" id="progressBar"></div>
+  </div>
+  <div class="progress-label">
+    <span id="progressText">0 of 30 checked</span>
+    <span id="progressPct">0%</span>
+  </div>
+</header>
+
+<!-- ALERT -->
+<div class="alert amber" style="margin-top:16px;">
+  <strong>⚠ Before You View</strong>
+  Run an HPI check on the reg plate before travelling. Check for outstanding Mitsubishi recalls at <strong>gov.uk/check-vehicle-recall</strong>.
+</div>
+
+<!-- SECTION 1: PAPERWORK -->
+<div class="section">
+  <div class="section-header">
+    <div class="section-icon">📋</div>
+    <div class="section-title">Paperwork & History</div>
+    <div class="section-count" id="count-0">0/6</div>
+  </div>
+
+  <div class="item" data-section="0" onclick="toggle(this)">
+    <div class="item-main">
+      <div class="checkbox"></div>
+      <div class="item-text">
+        <div class="item-label">V5C logbook present and matches seller</div>
+        <div class="item-note">Name and address on V5C should match who you're buying from</div>
+      </div>
+    </div>
+    <div class="flag-btn"><button class="flag-toggle" onclick="flag(event,this)">⚑ Flag issue</button></div>
+  </div>
+
+  <div class="item" data-section="0" onclick="toggle(this)">
+    <div class="item-main">
+      <div class="checkbox"></div>
+      <div class="item-text">
+        <div class="item-label">Full Mitsubishi dealer service history</div>
+        <div class="item-note">Should have stamps every 12 months or 12,500 miles. Gaps can void warranty.</div>
+      </div>
+    </div>
+    <div class="flag-btn"><button class="flag-toggle" onclick="flag(event,this)">⚑ Flag issue</button></div>
+  </div>
+
+  <div class="item" data-section="0" onclick="toggle(this)">
+    <div class="item-main">
+      <div class="checkbox"></div>
+      <div class="item-text">
+        <div class="item-label">Warranty confirmed transferable</div>
+        <div class="item-note">5-year/62,500-mile warranty. A 23 plate should have 2+ years remaining.</div>
+      </div>
+    </div>
+    <div class="flag-btn"><button class="flag-toggle" onclick="flag(event,this)">⚑ Flag issue</button></div>
+  </div>
+
+  <div class="item" data-section="0" onclick="toggle(this)">
+    <div class="item-main">
+      <div class="checkbox"></div>
+      <div class="item-text">
+        <div class="item-label">No outstanding finance (HPI clear)</div>
+        <div class="item-note">Outstanding finance means the lender owns the vehicle, not the seller</div>
+      </div>
+    </div>
+    <div class="flag-btn"><button class="flag-toggle" onclick="flag(event,this)">⚑ Flag issue</button></div>
+  </div>
+
+  <div class="item" data-section="0" onclick="toggle(this)">
+    <div class="item-main">
+      <div class="checkbox"></div>
+      <div class="item-text">
+        <div class="item-label">No outstanding Mitsubishi recalls</div>
+        <div class="item-note">Check gov.uk/check-vehicle-recall. Known ECU and airbag recalls on some L200s.</div>
+      </div>
+    </div>
+    <div class="flag-btn"><button class="flag-toggle" onclick="flag(event,this)">⚑ Flag issue</button></div>
+  </div>
+
+  <div class="item" data-section="0" onclick="toggle(this)">
+    <div class="item-main">
+      <div class="checkbox"></div>
+      <div class="item-text">
+        <div class="item-label">MOT history checked (gov.uk)</div>
+        <div class="item-note">Look for recurring advisories — especially suspension, corrosion, or brakes</div>
+      </div>
+    </div>
+    <div class="flag-btn"><button class="flag-toggle" onclick="flag(event,this)">⚑ Flag issue</button></div>
+  </div>
+</div>
+
+<!-- SECTION 2: EXTERIOR -->
+<div class="section">
+  <div class="section-header">
+    <div class="section-icon">🚛</div>
+    <div class="section-title">Exterior & Body</div>
+    <div class="section-count" id="count-1">0/5</div>
+  </div>
+
+  <div class="item" data-section="1" onclick="toggle(this)">
+    <div class="item-main">
+      <div class="checkbox"></div>
+      <div class="item-text">
+        <div class="item-label">Panel gaps even all around</div>
+        <div class="item-note">Uneven gaps suggest accident damage or poor repair work</div>
+      </div>
+    </div>
+    <div class="flag-btn"><button class="flag-toggle" onclick="flag(event,this)">⚑ Flag issue</button></div>
+  </div>
+
+  <div class="item" data-section="1" onclick="toggle(this)">
+    <div class="item-main">
+      <div class="checkbox"></div>
+      <div class="item-text">
+        <div class="item-label">No surface rust on chassis, arches or sills</div>
+        <div class="item-note">Known issue on L200. Get underneath and look — a torch is essential.</div>
+      </div>
+    </div>
+    <div class="flag-btn"><button class="flag-toggle" onclick="flag(event,this)">⚑ Flag issue</button></div>
+  </div>
+
+  <div class="item" data-section="1" onclick="toggle(this)">
+    <div class="item-main">
+      <div class="checkbox"></div>
+      <div class="item-text">
+        <div class="item-label">Load bed undamaged and drain holes clear</div>
+        <div class="item-note">Check for dents, scratches and standing water — rust starts here</div>
+      </div>
+    </div>
+    <div class="flag-btn"><button class="flag-toggle" onclick="flag(event,this)">⚑ Flag issue</button></div>
+  </div>
+
+  <div class="item" data-section="1" onclick="toggle(this)">
+    <div class="item-main">
+      <div class="checkbox"></div>
+      <div class="item-text">
+        <div class="item-label">Tyres — minimum 3mm tread, no cracking</div>
+        <div class="item-note">Check all four plus the spare. Uneven wear signals suspension issues.</div>
+      </div>
+    </div>
+    <div class="flag-btn"><button class="flag-toggle" onclick="flag(event,this)">⚑ Flag issue</button></div>
+  </div>
+
+  <div class="item" data-section="1" onclick="toggle(this)">
+    <div class="item-main">
+      <div class="checkbox"></div>
+      <div class="item-text">
+        <div class="item-label">Lights, indicators and reversing camera work</div>
+        <div class="item-note">Test every light. Electrical faults are a known L200 weakness.</div>
+      </div>
+    </div>
+    <div class="flag-btn"><button class="flag-toggle" onclick="flag(event,this)">⚑ Flag issue</button></div>
+  </div>
+</div>
+
+<!-- SECTION 3: UNDER THE BONNET -->
+<div class="section">
+  <div class="section-header">
+    <div class="section-icon">🔧</div>
+    <div class="section-title">Under the Bonnet</div>
+    <div class="section-count" id="count-2">0/6</div>
+  </div>
+
+  <div class="item" data-section="2" onclick="toggle(this)">
+    <div class="item-main">
+      <div class="checkbox"></div>
+      <div class="item-text">
+        <div class="item-label">Engine starts cold — no smoke or rattles</div>
+        <div class="item-note">Ask to view it cold. Blue smoke = oil burning. White = coolant. Rattle on startup = timing chain.</div>
+      </div>
+    </div>
+    <div class="flag-btn"><button class="flag-toggle" onclick="flag(event,this)">⚑ Flag issue</button></div>
+  </div>
+
+  <div class="item" data-section="2" onclick="toggle(this)">
+    <div class="item-main">
+      <div class="checkbox"></div>
+      <div class="item-text">
+        <div class="item-label">Oil level correct, no milky residue on cap</div>
+        <div class="item-note">Milky oil = coolant mixing with oil = potential head gasket failure</div>
+      </div>
+    </div>
+    <div class="flag-btn"><button class="flag-toggle" onclick="flag(event,this)">⚑ Flag issue</button></div>
+  </div>
+
+  <div class="item" data-section="2" onclick="toggle(this)">
+    <div class="item-main">
+      <div class="checkbox"></div>
+      <div class="item-text">
+        <div class="item-label">Coolant level correct, no oily residue</div>
+        <div class="item-note">Oily coolant = transmission cooler failure — a known L200 issue on auto gearboxes</div>
+      </div>
+    </div>
+    <div class="flag-btn"><button class="flag-toggle" onclick="flag(event,this)">⚑ Flag issue</button></div>
+  </div>
+
+  <div class="item" data-section="2" onclick="toggle(this)">
+    <div class="item-main">
+      <div class="checkbox"></div>
+      <div class="item-text">
+        <div class="item-label">No oil leaks visible on engine or underneath</div>
+        <div class="item-note">Check the ground where the vehicle was parked. Fresh oil stains are a red flag.</div>
+      </div>
+    </div>
+    <div class="flag-btn"><button class="flag-toggle" onclick="flag(event,this)">⚑ Flag issue</button></div>
+  </div>
+
+  <div class="item" data-section="2" onclick="toggle(this)">
+    <div class="item-main">
+      <div class="checkbox"></div>
+      <div class="item-text">
+        <div class="item-label">Turbo sounds healthy — no whine or lag</div>
+        <div class="item-note">Listen for whistle or delay in power delivery. Turbo replacement = £800–£1,500.</div>
+      </div>
+    </div>
+    <div class="flag-btn"><button class="flag-toggle" onclick="flag(event,this)">⚑ Flag issue</button></div>
+  </div>
+
+  <div class="item" data-section="2" onclick="toggle(this)">
+    <div class="item-main">
+      <div class="checkbox"></div>
+      <div class="item-text">
+        <div class="item-label">No warning lights on dashboard</div>
+        <div class="item-note">DPF, engine, ABS and 4WD lights are the key ones to watch for</div>
+      </div>
+    </div>
+    <div class="flag-btn"><button class="flag-toggle" onclick="flag(event,this)">⚑ Flag issue</button></div>
+  </div>
+</div>
+
+<!-- SECTION 4: TEST DRIVE -->
+<div class="section">
+  <div class="section-header">
+    <div class="section-icon">🛣️</div>
+    <div class="section-title">Test Drive</div>
+    <div class="section-count" id="count-3">0/6</div>
+  </div>
+
+  <div class="alert amber">
+    <strong>📍 Drive Route Tip</strong>
+    Insist on at least 20 minutes. Include a B-road for suspension, a dual carriageway for 50–70mph vibration check, and some slow-speed manoeuvres for steering and 4WD.
+  </div>
+  <br>
+
+  <div class="item" data-section="3" onclick="toggle(this)">
+    <div class="item-main">
+      <div class="checkbox"></div>
+      <div class="item-text">
+        <div class="item-label">No vibration at 50–70mph</div>
+        <div class="item-note">Propshaft vibration is a known L200 issue. Should feel smooth at motorway speed.</div>
+      </div>
+    </div>
+    <div class="flag-btn"><button class="flag-toggle" onclick="flag(event,this)">⚑ Flag issue</button></div>
+  </div>
+
+  <div class="item" data-section="3" onclick="toggle(this)">
+    <div class="item-main">
+      <div class="checkbox"></div>
+      <div class="item-text">
+        <div class="item-label">Gearbox shifts smoothly through all gears</div>
+        <div class="item-note">Auto should shift without hesitation, clunks or slipping. Test kickdown too.</div>
+      </div>
+    </div>
+    <div class="flag-btn"><button class="flag-toggle" onclick="flag(event,this)">⚑ Flag issue</button></div>
+  </div>
+
+  <div class="item" data-section="3" onclick="toggle(this)">
+    <div class="item-main">
+      <div class="checkbox"></div>
+      <div class="item-text">
+        <div class="item-label">Steering feels straight — no pull to one side</div>
+        <div class="item-note">Pulling suggests tracking or suspension issue. L200 steering can be over-assisted but should still be accurate.</div>
+      </div>
+    </div>
+    <div class="flag-btn"><button class="flag-toggle" onclick="flag(event,this)">⚑ Flag issue</button></div>
+  </div>
+
+  <div class="item" data-section="3" onclick="toggle(this)">
+    <div class="item-main">
+      <div class="checkbox"></div>
+      <div class="item-text">
+        <div class="item-label">Brakes feel progressive with no grinding</div>
+        <div class="item-note">Test at various speeds. Grinding = worn discs/pads. Pulling = seized caliper.</div>
+      </div>
+    </div>
+    <div class="flag-btn"><button class="flag-toggle" onclick="flag(event,this)">⚑ Flag issue</button></div>
+  </div>
+
+  <div class="item" data-section="3" onclick="toggle(this)">
+    <div class="item-main">
+      <div class="checkbox"></div>
+      <div class="item-text">
+        <div class="item-label">4WD system switches through all modes</div>
+        <div class="item-note">Test 2H, 4H and 4L. Warning light should clear within seconds of switching.</div>
+      </div>
+    </div>
+    <div class="flag-btn"><button class="flag-toggle" onclick="flag(event,this)">⚑ Flag issue</button></div>
+  </div>
+
+  <div class="item" data-section="3" onclick="toggle(this)">
+    <div class="item-main">
+      <div class="checkbox"></div>
+      <div class="item-text">
+        <div class="item-label">Air conditioning blows cold</div>
+        <div class="item-note">AC recharge costs £100–£150 if not. A/C faults are a common minor issue on the L200.</div>
+      </div>
+    </div>
+    <div class="flag-btn"><button class="flag-toggle" onclick="flag(event,this)">⚑ Flag issue</button></div>
+  </div>
+</div>
+
+<!-- SECTION 5: INTERIOR -->
+<div class="section">
+  <div class="section-header">
+    <div class="section-icon">🪑</div>
+    <div class="section-title">Interior & Electrics</div>
+    <div class="section-count" id="count-4">0/4</div>
+  </div>
+
+  <div class="item" data-section="4" onclick="toggle(this)">
+    <div class="item-main">
+      <div class="checkbox"></div>
+      <div class="item-text">
+        <div class="item-label">Infotainment, Apple CarPlay / Android Auto work</div>
+        <div class="item-note">Test a phone connection. Check all USB ports front and rear.</div>
+      </div>
+    </div>
+    <div class="flag-btn"><button class="flag-toggle" onclick="flag(event,this)">⚑ Flag issue</button></div>
+  </div>
+
+  <div class="item" data-section="4" onclick="toggle(this)">
+    <div class="item-main">
+      <div class="checkbox"></div>
+      <div class="item-text">
+        <div class="item-label">Electric windows all work smoothly</div>
+        <div class="item-note">Window motor failures reported after 70,000+ miles. Test all four.</div>
+      </div>
+    </div>
+    <div class="flag-btn"><button class="flag-toggle" onclick="flag(event,this)">⚑ Flag issue</button></div>
+  </div>
+
+  <div class="item" data-section="4" onclick="toggle(this)">
+    <div class="item-main">
+      <div class="checkbox"></div>
+      <div class="item-text">
+        <div class="item-label">Seats, trim and headlining in good condition</div>
+        <div class="item-note">Barbarian should have leather seats. Check for tears, stains or damage.</div>
+      </div>
+    </div>
+    <div class="flag-btn"><button class="flag-toggle" onclick="flag(event,this)">⚑ Flag issue</button></div>
+  </div>
+
+  <div class="item" data-section="4" onclick="toggle(this)">
+    <div class="item-main">
+      <div class="checkbox"></div>
+      <div class="item-text">
+        <div class="item-label">No damp or musty smell inside cab</div>
+        <div class="item-note">Check under mats and in footwells. Damp = potential door seal or sunroof leak.</div>
+      </div>
+    </div>
+    <div class="flag-btn"><button class="flag-toggle" onclick="flag(event,this)">⚑ Flag issue</button></div>
+  </div>
+</div>
+
+<!-- SECTION 6: NEGOTIATION -->
+<div class="section">
+  <div class="section-header">
+    <div class="section-icon">💷</div>
+    <div class="section-title">Price & Negotiation</div>
+    <div class="section-count" id="count-5">0/3</div>
+  </div>
+
+  <div class="item" data-section="5" onclick="toggle(this)">
+    <div class="item-main">
+      <div class="checkbox"></div>
+      <div class="item-text">
+        <div class="item-label">Price is within £22,000–£27,000 range</div>
+        <div class="item-note">Barbarian / Barbarian X on a 23 plate. Higher mileage should be at the lower end.</div>
+      </div>
+    </div>
+    <div class="flag-btn"><button class="flag-toggle" onclick="flag(event,this)">⚑ Flag issue</button></div>
+  </div>
+
+  <div class="item" data-section="5" onclick="toggle(this)">
+    <div class="item-main">
+      <div class="checkbox"></div>
+      <div class="item-text">
+        <div class="item-label">Budget for day-one costs agreed</div>
+        <div class="item-note">Underseal £500–£750 · Tonneau cover £400–£600 · Inspection £100–£150</div>
+      </div>
+    </div>
+    <div class="flag-btn"><button class="flag-toggle" onclick="flag(event,this)">⚑ Flag issue</button></div>
+  </div>
+
+  <div class="item" data-section="5" onclick="toggle(this)">
+    <div class="item-main">
+      <div class="checkbox"></div>
+      <div class="item-text">
+        <div class="item-label">Independent pre-purchase inspection booked</div>
+        <div class="item-note">AA, RAC or local independent mechanic. Never skip on a used vehicle. Cost ~£100–£150.</div>
+      </div>
+    </div>
+    <div class="flag-btn"><button class="flag-toggle" onclick="flag(event,this)">⚑ Flag issue</button></div>
+  </div>
+</div>
+
+<!-- COST SUMMARY -->
+<div class="cost-box">
+  <h3>💰 Total Budget Summary</h3>
+  <div class="cost-row"><span>Vehicle (Barbarian/Barbarian X)</span><span>£22,000–£27,000</span></div>
+  <div class="cost-row"><span>Underseal (Waxoyl/Dinitrol)</span><span>£500–£750</span></div>
+  <div class="cost-row"><span>Tonneau cover (hard folding)</span><span>£400–£600</span></div>
+  <div class="cost-row"><span>Styling upgrades (if needed)</span><span>£200–£600</span></div>
+  <div class="cost-row"><span>Pre-purchase inspection</span><span>£100–£150</span></div>
+  <div class="cost-row"><span>All-in total</span><span>£23,200–£29,100</span></div>
+</div>
+
+<!-- VERDICT SUMMARY -->
+<div class="summary" id="summary">
+  <h3>Your Verdict</h3>
+  <div class="summary-stats">
+    <div class="stat">
+      <div class="stat-num green" id="statChecked">0</div>
+      <div class="stat-label">Passed</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num red" id="statFlagged">0</div>
+      <div class="stat-label">Issues</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num amber" id="statRemaining">30</div>
+      <div class="stat-label">Remaining</div>
+    </div>
+  </div>
+  <div class="verdict" id="verdict"></div>
+</div>
+
+<div class="alert red" style="margin-top:20px;">
+  <strong>🚫 Walk Away If...</strong>
+  Seller won't allow an independent inspection · Missing service history · Outstanding finance on HPI · Any warning lights they can't explain · Chassis rust on the underside
+</div>
+
+<div class="reset-wrap">
+  <button class="reset-btn" onclick="resetAll()">↺ Reset checklist</button>
+</div>
+
+<div style="text-align:center; margin: 32px 12px 16px; padding-top: 16px; border-top: 1px solid #2e2e2e; font-size: 11px; color: #555; letter-spacing: 1.5px; text-transform: uppercase; font-family: 'Inter', sans-serif;">
+  © GaryM 2026. All rights reserved.
+</div>
+
+<script>
+  const TOTAL = 30;
+
+  function toggle(item) {
+    if (item.classList.contains('flagged')) return;
+    item.classList.toggle('checked');
+    const cb = item.querySelector('.checkbox');
+    cb.textContent = item.classList.contains('checked') ? '✓' : '';
+    update();
+  }
+
+  function flag(e, btn) {
+    e.stopPropagation();
+    const item = btn.closest('.item');
+    if (item.classList.contains('flagged')) {
+      item.classList.remove('flagged');
+      item.classList.add('checked');
+      btn.textContent = '⚑ Flag issue';
+      item.querySelector('.checkbox').textContent = '✓';
+    } else {
+      item.classList.add('flagged');
+      item.classList.remove('checked');
+      btn.textContent = '✓ Clear flag';
+      item.querySelector('.checkbox').textContent = '!';
+    }
+    update();
+  }
+
+  function update() {
+    const items = document.querySelectorAll('.item');
+    let checked = 0, flagged = 0;
+
+    items.forEach(item => {
+      if (item.classList.contains('checked') || item.classList.contains('flagged')) checked++;
+      if (item.classList.contains('flagged')) flagged++;
+    });
+
+    const pct = Math.round((checked / TOTAL) * 100);
+    document.getElementById('progressBar').style.width = pct + '%';
+    document.getElementById('progressText').textContent = `${checked} of ${TOTAL} checked`;
+    document.getElementById('progressPct').textContent = pct + '%';
+
+    // Section counts
+    for (let s = 0; s < 6; s++) {
+      const sItems = document.querySelectorAll(`[data-section="${s}"]`);
+      const sDone = [...sItems].filter(i => i.classList.contains('checked') || i.classList.contains('flagged')).length;
+      document.getElementById(`count-${s}`).textContent = `${sDone}/${sItems.length}`;
+    }
+
+    // Summary
+    const summary = document.getElementById('summary');
+    const pureFlagged = document.querySelectorAll('.item.flagged').length;
+    const pureChecked = document.querySelectorAll('.item.checked').length;
+    const remaining = TOTAL - pureChecked - pureFlagged;
+
+    document.getElementById('statChecked').textContent = pureChecked;
+    document.getElementById('statFlagged').textContent = pureFlagged;
+    document.getElementById('statRemaining').textContent = remaining;
+
+    if (checked > 0) {
+      summary.classList.add('visible');
+      const verdict = document.getElementById('verdict');
+      if (pureFlagged === 0 && remaining === 0) {
+        verdict.className = 'verdict go';
+        verdict.textContent = '✅ All checks passed — this looks like a solid buy. Get the independent inspection booked and negotiate on price.';
+      } else if (pureFlagged >= 3) {
+        verdict.className = 'verdict stop';
+        verdict.textContent = `🚫 ${pureFlagged} issues flagged — proceed with caution or walk away. Use flagged items to negotiate the price down significantly.`;
+      } else if (pureFlagged > 0) {
+        verdict.className = 'verdict caution';
+        verdict.textContent = `⚠ ${pureFlagged} issue${pureFlagged > 1 ? 's' : ''} flagged — get a quote to fix before committing, or use as negotiating leverage on the price.`;
+      } else {
+        verdict.className = 'verdict caution';
+        verdict.textContent = `${remaining} checks still to complete. Keep going before making a decision.`;
+      }
+    }
+  }
+
+  function resetAll() {
+    document.querySelectorAll('.item').forEach(item => {
+      item.classList.remove('checked', 'flagged');
+      item.querySelector('.checkbox').textContent = '';
+      const btn = item.querySelector('.flag-toggle');
+      if (btn) btn.textContent = '⚑ Flag issue';
+    });
+    document.getElementById('summary').classList.remove('visible');
+    update();
+  }
+
+  update();
+</script>
+</body>
+</html>
